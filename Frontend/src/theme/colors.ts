@@ -1,31 +1,32 @@
 export const colors = {
-  primary: '#7B61FF', // Morado suave / Lavanda
-  primaryLight: '#EBE5FF',
-  secondary: '#3B82F6', // Azul claro
-  success: '#10B981', // Verde suave
+  primary: '#6366F1', // Indigo 500
+  primaryLight: '#E0E7FF', // Indigo 100
+  secondary: '#22D3EE', // Cyan 400
+  accent: '#8B5CF6', // Violet 500
+  success: '#10B981', 
   successLight: '#D1FAE5',
-  warning: '#F59E0B', // Naranja
+  warning: '#F59E0B',
   warningLight: '#FEF3C7',
   danger: '#EF4444',
   
-  background: '#F9FAFB', // Gris muy claro
-  surface: '#FFFFFF', // Blanco
+  background: '#F8FAFC', // Slate 50
+  surface: '#FFFFFF', 
   
   text: {
-    primary: '#111827',
-    secondary: '#6B7280',
+    primary: '#0F172A', // Slate 900
+    secondary: '#64748B', // Slate 500
     tertiary: '#9CA3AF',
     inverse: '#FFFFFF',
   },
   
-  border: '#E5E7EB',
-  divider: '#F3F4F6',
+  border: '#E2E8F0', // Slate 200
+  divider: '#F1F5F9', // Slate 100
   
   sidebar: {
     background: '#FFFFFF',
-    hover: '#F3F4F6',
-    active: '#EBE5FF',
-    text: '#4B5563',
-    textActive: '#7B61FF',
+    hover: '#F8FAFC',
+    active: '#EEF2FF', // Indigo 50
+    text: '#64748B',
+    textActive: '#6366F1',
   }
 };
