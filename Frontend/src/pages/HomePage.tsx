@@ -32,7 +32,7 @@ export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState<ConnectorStatus>('disconnected');
 
   useEffect(() => {
-    mockApi.getTeamConnectors(teamId || 't1').then(connectors => {
+    apiClient.getTeamConnectors(teamId || 't1').then(connectors => {
       const tg = connectors.find(c => c.provider === 'telegram');
       if (tg) setTelegramStatus(tg.status);
     });

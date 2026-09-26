@@ -5,7 +5,7 @@ import { theme } from '../theme';
 import { IntegrationCard } from '../components/features/integrations/IntegrationCard';
 import { TelegramTokenModal } from '../components/features/integrations/TelegramTokenModal';
 import { Connector, IntegrationProvider } from '../types';
-import { mockApi } from '../services/mockApi';
+import { apiClient } from '../services/apiClient';
 
 const AVAILABLE_PROVIDERS: { provider: IntegrationProvider, name: string, description: string }[] = [
   { provider: 'telegram', name: 'Telegram', description: 'Bot de comunicación de Milo. Conecta el bot para que tu equipo interactúe con Milo.' },
@@ -28,7 +28,7 @@ export default function IntegrationsScreen() {
 
   const loadConnectors = async () => {
     try {
-      const data = await mockApi.getTeamConnectors(TEAM_ID);
+      const data = await apiClient.getTeamConnectors(TEAM_ID);
       setConnectors(data);
     } catch (e) {
       console.error(e);
@@ -51,7 +51,7 @@ export default function IntegrationsScreen() {
 
       for (const id of pollingConnectors) {
         try {
-          const status = await mockApi.getConnectorStatus(id);
+          const status = await apiClient.getConnectorStatus(id);
           const index = newConnectors.findIndex(c => c.id === id);
           if (index !== -1 && newConnectors[index].status !== status.status) {
             newConnectors[index] = status;
@@ -79,7 +79,7 @@ export default function IntegrationsScreen() {
 
   const handleConnect = async (provider: IntegrationProvider, payload?: any) => {
     try {
-      const { authUrl, connector } = await mockApi.connectProvider(TEAM_ID, provider, payload);
+      const { authUrl, connector } = await apiClient.connectProvider(TEAM_ID, provider, payload);
       
       // Update UI optimistically to pending
       setConnectors(prev => {
@@ -109,7 +109,7 @@ export default function IntegrationsScreen() {
 
   const handleDisconnect = async (provider: IntegrationProvider) => {
     try {
-      await mockApi.disconnectProvider(TEAM_ID, provider);
+      await apiClient.disconnectProvider(TEAM_ID, provider);
       await loadConnectors(); // Reload to get fresh state
     } catch (e) {
       console.error(e);
