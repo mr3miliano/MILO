@@ -16,7 +16,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { AppShell } from "../components/layout/AppShell";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { mockApi } from "../services/mockApi";
+import { apiClient } from "../services/apiClient";
 import { ConnectorStatus } from "../types";
 import {
     currentSprint,
