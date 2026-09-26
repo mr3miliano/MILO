@@ -1,38 +1,120 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { AppShell } from '../components/layout/AppShell';
 import { theme } from '../theme';
-import { integrationsMock, Integration } from '../mocks/integrations';
-import { HardDrive, GitBranch, MessageCircle, Users, Phone, Calendar, Send } from 'lucide-react-native';
+import { IntegrationCard } from '../components/features/integrations/IntegrationCard';
+import { TelegramTokenModal } from '../components/features/integrations/TelegramTokenModal';
+import { Connector, IntegrationProvider } from '../types';
+import { mockApi } from '../services/mockApi';
+
+const AVAILABLE_PROVIDERS: { provider: IntegrationProvider, name: string, description: string }[] = [
+  { provider: 'telegram', name: 'Telegram', description: 'Bot de comunicación de Milo. Conecta el bot para que tu equipo interactúe con Milo.' },
+  { provider: 'gmail', name: 'Gmail', description: 'Permite a Milo leer y responder correos importantes de tu cuenta.' },
+  { provider: 'drive', name: 'Google Drive', description: 'Documentos del equipo. Milo podrá buscar y resumir información de tus archivos.' },
+  { provider: 'github', name: 'GitHub', description: 'Repositorio y Pull Requests. Milo revisará código y status de desarrollo.' },
+  { provider: 'github_pat', name: 'GitHub PAT', description: 'Conexión a GitHub mediante Personal Access Token.' },
+  { provider: 'notion', name: 'Notion', description: 'Base de conocimiento. Milo indexará tus páginas.' },
+  { provider: 'vercel', name: 'Vercel', description: 'Deployments y status del frontend.' },
+];
 
 export default function IntegrationsScreen() {
-  const [integrations, setIntegrations] = useState<Integration[]>(integrationsMock);
+  const [connectors, setConnectors] = useState<Connector[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [telegramModalVisible, setTelegramModalVisible] = useState(false);
+  const [pollingConnectors, setPollingConnectors] = useState<Set<string>>(new Set());
 
-  const toggleConnection = (id: string) => {
-    setIntegrations(prev => prev.map(int => 
-      int.id === id ? { ...int, connected: !int.connected } : int
-    ));
-  };
+  // Hardcoded for mock purposes
+  const TEAM_ID = 't1';
 
-  const getIcon = (iconName: string) => {
-    const props = { size: 24, color: theme.colors.text.secondary };
-    switch (iconName) {
-      case 'hard-drive': return <HardDrive {...props} />;
-      case 'github': return <GitBranch {...props} />;
-      case 'message-circle': return <MessageCircle {...props} />;
-      case 'users': return <Users {...props} />;
-      case 'phone': return <Phone {...props} />;
-      case 'calendar': return <Calendar {...props} />;
-      case 'send': return <Send {...props} />;
-      default: return <HardDrive {...props} />;
+  const loadConnectors = async () => {
+    try {
+      const data = await mockApi.getTeamConnectors(TEAM_ID);
+      setConnectors(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const categories = [
-    { id: 'productividad', title: 'Productividad' },
-    { id: 'desarrollo', title: 'Desarrollo' },
-    { id: 'comunicacion', title: 'Comunicación' },
-  ];
+  useEffect(() => {
+    loadConnectors();
+  }, []);
+
+  // POLLING LOGIC
+  useEffect(() => {
+    if (pollingConnectors.size === 0) return;
+
+    const intervalId = setInterval(async () => {
+      const newConnectors = [...connectors];
+      let changed = false;
+
+      for (const id of pollingConnectors) {
+        try {
+          const status = await mockApi.getConnectorStatus(id);
+          const index = newConnectors.findIndex(c => c.id === id);
+          if (index !== -1 && newConnectors[index].status !== status.status) {
+            newConnectors[index] = status;
+            changed = true;
+            if (status.status === 'connected' || status.status === 'error') {
+              setPollingConnectors(prev => {
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+              });
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      if (changed) {
+        setConnectors(newConnectors);
+      }
+    }, 2000);
+
+    return () => clearInterval(intervalId);
+  }, [pollingConnectors, connectors]);
+
+  const handleConnect = async (provider: IntegrationProvider, payload?: any) => {
+    try {
+      const { authUrl, connector } = await mockApi.connectProvider(TEAM_ID, provider, payload);
+      
+      // Update UI optimistically to pending
+      setConnectors(prev => {
+        const exists = prev.findIndex(c => c.provider === provider);
+        if (exists !== -1) {
+          const next = [...prev];
+          next[exists] = connector;
+          return next;
+        }
+        return [...prev, connector];
+      });
+
+      if (authUrl) {
+        // En una app real, aquí usaríamos expo-web-browser o Linking
+        console.log("Opening OAuth URL:", authUrl);
+        Alert.alert("OAuth Redirection", "Simulando abrir la ventana de OAuth en el navegador...");
+      }
+
+      // Start polling the new connector
+      setPollingConnectors(prev => new Set(prev).add(connector.id));
+
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Error", "No se pudo iniciar la conexión.");
+    }
+  };
+
+  const handleDisconnect = async (provider: IntegrationProvider) => {
+    try {
+      await mockApi.disconnectProvider(TEAM_ID, provider);
+      await loadConnectors(); // Reload to get fresh state
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <AppShell title="Integraciones">
@@ -40,65 +122,44 @@ export default function IntegrationsScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Aplicaciones Conectadas</Text>
           <Text style={styles.subtitle}>
-            Conecta Milo con tus herramientas favoritas para centralizar tu trabajo.
+            Conecta Milo con tus herramientas favoritas. Milo utilizará estas conexiones para interactuar con tu equipo.
           </Text>
         </View>
 
-        {categories.map(category => {
-          const categoryIntegrations = integrations.filter(i => i.category === category.id);
-          if (categoryIntegrations.length === 0) return null;
+        <View style={styles.grid}>
+          {AVAILABLE_PROVIDERS.map(p => {
+            const connector = connectors.find(c => c.provider === p.provider);
+            const status = connector ? connector.status : 'disconnected';
 
-          return (
-            <View key={category.id} style={styles.categorySection}>
-              <Text style={styles.categoryTitle}>{category.title}</Text>
-              <View style={styles.grid}>
-                {categoryIntegrations.map(integration => (
-                  <View key={integration.id} style={styles.card}>
-                    <View style={styles.cardHeader}>
-                      <View style={styles.iconContainer}>
-                        {getIcon(integration.iconName)}
-                      </View>
-                      <View style={[
-                        styles.statusBadge, 
-                        integration.connected ? styles.statusConnected : styles.statusDisconnected
-                      ]}>
-                        <Text style={[
-                          styles.statusText, 
-                          integration.connected ? styles.statusTextConnected : styles.statusTextDisconnected
-                        ]}>
-                          {integration.connected ? 'Conectado' : 'No conectado'}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.cardBody}>
-                      <Text style={styles.integrationName}>{integration.name}</Text>
-                      <Text style={styles.integrationDesc}>{integration.description}</Text>
-                    </View>
-
-                    <View style={styles.cardFooter}>
-                      <Pressable 
-                        style={[
-                          styles.actionButton, 
-                          integration.connected ? styles.actionButtonDisconnect : styles.actionButtonConnect
-                        ]}
-                        onPress={() => toggleConnection(integration.id)}
-                      >
-                        <Text style={[
-                          styles.actionButtonText,
-                          integration.connected ? styles.actionTextDisconnect : styles.actionTextConnect
-                        ]}>
-                          {integration.connected ? 'Desconectar' : 'Conectar'}
-                        </Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-          );
-        })}
+            return (
+              <IntegrationCard
+                key={p.provider}
+                provider={p.provider}
+                name={p.name}
+                description={p.description}
+                status={status}
+                onConnect={() => {
+                  if (p.provider === 'telegram') {
+                    setTelegramModalVisible(true);
+                  } else {
+                    handleConnect(p.provider);
+                  }
+                }}
+                onDisconnect={() => handleDisconnect(p.provider)}
+              />
+            );
+          })}
+        </View>
       </ScrollView>
+
+      <TelegramTokenModal
+        visible={telegramModalVisible}
+        onClose={() => setTelegramModalVisible(false)}
+        onSubmit={(token) => {
+          setTelegramModalVisible(false);
+          handleConnect('telegram', { token });
+        }}
+      />
     </AppShell>
   );
 }
@@ -116,86 +177,9 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.size.md,
     color: theme.colors.text.secondary,
   },
-  categorySection: {
-    marginBottom: theme.spacing.xxl,
-  },
-  categoryTitle: {
-    fontSize: theme.typography.size.lg,
-    fontWeight: theme.typography.weight.semibold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.lg,
-  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.lg,
   },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    padding: theme.spacing.lg,
-    width: 300,
-    ...theme.shadows.sm,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: theme.spacing.md,
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: theme.radius.sm,
-  },
-  statusConnected: { backgroundColor: theme.colors.successLight },
-  statusDisconnected: { backgroundColor: theme.colors.background },
-  statusText: { fontSize: 12, fontWeight: theme.typography.weight.medium },
-  statusTextConnected: { color: theme.colors.success },
-  statusTextDisconnected: { color: theme.colors.text.secondary },
-  cardBody: { marginBottom: theme.spacing.lg, flex: 1 },
-  integrationName: {
-    fontSize: theme.typography.size.md,
-    fontWeight: theme.typography.weight.semibold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
-  },
-  integrationDesc: {
-    fontSize: theme.typography.size.sm,
-    color: theme.colors.text.secondary,
-    lineHeight: 20,
-  },
-  cardFooter: { marginTop: 'auto' },
-  actionButton: {
-    width: '100%',
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  actionButtonConnect: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-  },
-  actionButtonDisconnect: {
-    backgroundColor: theme.colors.background,
-    borderColor: 'transparent',
-  },
-  actionButtonText: {
-    fontSize: theme.typography.size.sm,
-    fontWeight: theme.typography.weight.semibold,
-  },
-  actionTextConnect: { color: theme.colors.text.primary },
-  actionTextDisconnect: { color: theme.colors.danger }
 });

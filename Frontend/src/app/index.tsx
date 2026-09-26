@@ -13,8 +13,11 @@ import {
     TextInput,
     View,
 } from "react-native";
+import React, { useState, useEffect } from "react";
 import { AppShell } from "../components/layout/AppShell";
 import { useRouter } from "expo-router";
+import { mockApi } from "../services/mockApi";
+import { ConnectorStatus } from "../types";
 import {
     currentSprint,
     currentUser,
@@ -25,6 +28,14 @@ import { theme } from "../theme";
 
 export default function Home() {
   const router = useRouter();
+  const [telegramStatus, setTelegramStatus] = useState<ConnectorStatus>('disconnected');
+
+  useEffect(() => {
+    mockApi.getTeamConnectors('t1').then(connectors => {
+      const tg = connectors.find(c => c.provider === 'telegram');
+      if (tg) setTelegramStatus(tg.status);
+    });
+  }, []);
 
   const handleQuickAction = (action: string) => {
     if (action === "Resumen del sprint") router.push('/work');
@@ -42,6 +53,28 @@ export default function Home() {
             Esto es lo que está pasando con tu equipo.
           </Text>
         </View>
+
+        {/* Telegram Status Notice */}
+        {telegramStatus === 'connected' ? (
+          <View style={[styles.telegramNotice, { backgroundColor: theme.colors.successLight, borderColor: theme.colors.success }]}>
+            <View style={styles.statusRow}>
+              <CheckCircle2 size={20} color={theme.colors.success} />
+              <Text style={[styles.telegramTitle, { color: theme.colors.success }]}>Milo listo</Text>
+            </View>
+            <Text style={styles.telegramDesc}>Telegram conectado. Tu equipo ya puede interactuar con Milo.</Text>
+          </View>
+        ) : (
+          <View style={[styles.telegramNotice, { backgroundColor: theme.colors.warningLight, borderColor: theme.colors.warning }]}>
+            <View style={styles.statusRow}>
+              <Circle size={20} color={theme.colors.warning} />
+              <Text style={[styles.telegramTitle, { color: theme.colors.warning }]}>Configuración pendiente</Text>
+            </View>
+            <Text style={styles.telegramDesc}>Conecta Telegram para activar el canal de comunicación de Milo con tu equipo.</Text>
+            <Pressable style={styles.telegramBtn} onPress={() => router.push('/integrations')}>
+              <Text style={styles.telegramBtnText}>Ir a Integraciones</Text>
+            </Pressable>
+          </View>
+        )}
 
         {/* Milo Input Principal */}
         <View style={styles.miloCard}>
@@ -193,6 +226,41 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: theme.typography.size.md,
     color: theme.colors.text.secondary,
+  },
+  telegramNotice: {
+    padding: theme.spacing.lg,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    marginBottom: theme.spacing.xl,
+  },
+  statusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.xs,
+    marginBottom: theme.spacing.xs,
+  },
+  telegramTitle: {
+    fontSize: theme.typography.size.md,
+    fontWeight: theme.typography.weight.bold,
+  },
+  telegramDesc: {
+    fontSize: theme.typography.size.sm,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing.md,
+  },
+  telegramBtn: {
+    alignSelf: "flex-start",
+    backgroundColor: theme.colors.surface,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.warning,
+  },
+  telegramBtnText: {
+    color: theme.colors.warning,
+    fontSize: theme.typography.size.sm,
+    fontWeight: theme.typography.weight.semibold,
   },
   miloCard: {
     backgroundColor: theme.colors.surface,
