@@ -14,6 +14,7 @@ import {
     View,
 } from "react-native";
 import { AppShell } from "../components/layout/AppShell";
+import { useRouter } from "expo-router";
 import {
     currentSprint,
     currentUser,
@@ -23,6 +24,14 @@ import {
 import { theme } from "../theme";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleQuickAction = (action: string) => {
+    if (action === "Resumen del sprint") router.push('/work');
+    if (action === "Mis tareas") router.push('/work');
+    if (action === "Buscar documento") router.push('/work');
+  };
+
   return (
     <AppShell title="Inicio">
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -48,14 +57,14 @@ export default function Home() {
               placeholder="Pregúntale algo a Milo..."
               placeholderTextColor={theme.colors.text.tertiary}
             />
-            <Pressable style={styles.sendButton}>
+            <Pressable style={styles.sendButton} onPress={() => router.push('/milo')}>
               <ArrowRight size={20} color={theme.colors.text.inverse} />
             </Pressable>
           </View>
           <View style={styles.quickActions}>
             {["Resumen del sprint", "Mis tareas", "Buscar documento"].map(
               (action, i) => (
-                <Pressable key={i} style={styles.quickActionBadge}>
+                <Pressable key={i} style={styles.quickActionBadge} onPress={() => handleQuickAction(action)}>
                   <Text style={styles.quickActionText}>{action}</Text>
                 </Pressable>
               ),
@@ -71,7 +80,9 @@ export default function Home() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Resumen del Sprint</Text>
-                <Text style={styles.cardAction}>Ver detalles</Text>
+                <Pressable onPress={() => router.push('/work')}>
+                  <Text style={styles.cardAction}>Ver detalles</Text>
+                </Pressable>
               </View>
               <Text style={styles.sprintName}>{currentSprint.name}</Text>
               <View style={styles.progressContainer}>
@@ -110,7 +121,9 @@ export default function Home() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Mis tareas</Text>
-                <Text style={styles.cardAction}>Ver todas</Text>
+                <Pressable onPress={() => router.push('/work')}>
+                  <Text style={styles.cardAction}>Ver todas</Text>
+                </Pressable>
               </View>
               <View style={styles.list}>
                 {recentTasks.map((task) => (
