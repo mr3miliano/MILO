@@ -1,18 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { theme } from '../../../theme';
-import { CheckCircle2, Circle } from 'lucide-react-native';
-import { ResultCardType } from '../../../mocks/milo';
+import { CheckCircle2, Circle, GitPullRequest, GitMerge, GitCommit } from 'lucide-react-native';
+import { MiloContent } from '../../../mocks/milo';
 
 interface MiloResultCardProps {
-  type: ResultCardType;
-  data: any;
+  responseContent: MiloContent;
 }
 
-export const MiloResultCard = ({ type, data }: MiloResultCardProps) => {
-  if (type === 'none' || !data) return null;
+export const MiloResultCard = ({ responseContent }: MiloResultCardProps) => {
+  if (responseContent.type === 'text') return null;
 
-  if (type === 'sprint') {
+  if (responseContent.type === 'sprint') {
+    const data = responseContent.content;
     return (
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{data.name}</Text>
@@ -30,26 +30,63 @@ export const MiloResultCard = ({ type, data }: MiloResultCardProps) => {
     );
   }
 
-  if (type === 'task') {
+  if (responseContent.type === 'tasks') {
+    const data = responseContent.content;
     return (
       <View style={styles.card}>
         {data.map((task: any) => (
-          <View key={task.id} style={styles.taskItem}>
+          <View key={task.id} style={styles.itemRow}>
             {task.status === 'completed' ? (
               <CheckCircle2 size={16} color={theme.colors.success} />
             ) : (
               <Circle size={16} color={theme.colors.text.tertiary} />
             )}
-            <Text style={styles.taskText}>{task.title}</Text>
+            <Text style={styles.itemText}>{task.title}</Text>
           </View>
         ))}
       </View>
     );
   }
 
+  if (responseContent.type === 'pull_requests') {
+    const data = responseContent.content;
+    return (
+      <View style={styles.card}>
+        {data.map((pr: any) => (
+          <View key={pr.id} style={styles.itemRow}>
+            {pr.status === 'merged' ? (
+              <GitMerge size={16} color={theme.colors.primary} />
+            ) : pr.status === 'approved' ? (
+              <CheckCircle2 size={16} color={theme.colors.success} />
+            ) : (
+              <GitPullRequest size={16} color={theme.colors.warning} />
+            )}
+            <View>
+              <Text style={styles.itemText}>#{pr.number} {pr.title}</Text>
+              <Text style={styles.itemSubText}>{pr.author} • {pr.status}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    );
+  }
+
+  if (responseContent.type === 'repository') {
+    const data = responseContent.content;
+    return (
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{data.name}</Text>
+        <View style={styles.itemRow}>
+          <GitCommit size={16} color={theme.colors.text.secondary} />
+          <Text style={styles.itemText}>{data.lastCommit} ({data.lastCommitAuthor})</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.card}>
-      <Text style={styles.cardTitle}>Resultado no soportado visualmente aún</Text>
+      <Text style={styles.cardTitle}>Resultado visual no soportado aún</Text>
     </View>
   );
 };
@@ -95,14 +132,18 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.size.sm,
     color: theme.colors.text.tertiary,
   },
-  taskItem: {
+  itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.sm,
     paddingVertical: theme.spacing.xs,
   },
-  taskText: {
+  itemText: {
     fontSize: theme.typography.size.sm,
     color: theme.colors.text.primary,
+  },
+  itemSubText: {
+    fontSize: 12,
+    color: theme.colors.text.secondary,
   }
 });

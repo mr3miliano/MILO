@@ -24,8 +24,8 @@ export const MiloMessage = ({ message }: MiloMessageProps) => {
           {message.text}
         </Text>
         
-        {message.resultType && message.resultType !== 'none' && (
-          <MiloResultCard type={message.resultType} data={message.resultData} />
+        {message.responseContent && message.responseContent.type !== 'text' && (
+          <MiloResultCard responseContent={message.responseContent} />
         )}
       </View>
 

@@ -21,7 +21,8 @@ export const recentTasks = [
 ];
 
 export const recentActivity = [
-  { id: 'a1', description: 'Ana subió un nuevo documento: Contrato ACME', time: 'Hace 2 horas' },
-  { id: 'a2', description: 'Carlos completó la tarea: Diseño de base de datos', time: 'Hace 4 horas' },
-  { id: 'a3', description: 'Milo actualizó el resumen del sprint', time: 'Ayer' },
+  { id: 'a1', description: 'Ana aprobó el Pull Request #24', time: 'Hace 5 minutos' },
+  { id: 'a2', description: 'Se conectó la integración con GitHub', time: 'Hace 1 hora' },
+  { id: 'a3', description: 'Carlos completó la tarea "Diseño de base de datos"', time: 'Hace 4 horas' },
+  { id: 'a4', description: 'Milo actualizó el resumen del sprint', time: 'Ayer' },
 ];

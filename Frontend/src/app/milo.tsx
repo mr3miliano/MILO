@@ -21,14 +21,12 @@ export default function MiloScreen() {
     
     setMessages(prev => [...prev, newMessage]);
 
-    // Simular respuesta de Milo
     setTimeout(() => {
       const miloResponse: IMiloMessage = {
         id: (Date.now() + 1).toString(),
         role: 'milo',
         text: `He recibido tu mensaje: "${text}". Aún estoy aprendiendo a responder a nuevas consultas, ¡pero pronto podré ayudarte con esto!`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        resultType: 'none'
       };
       setMessages(prev => [...prev, miloResponse]);
     }, 1000);

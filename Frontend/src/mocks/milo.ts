@@ -1,22 +1,33 @@
-import { currentSprint, recentTasks } from './home';
+import { currentSprintDetail, Sprint } from './sprints';
+import { Task } from './tasks';
+import { PullRequest, pullRequestsMock } from './pullRequests';
+import { Repository, repositoriesMock } from './repositories';
 
 export type MessageRole = 'user' | 'milo';
-export type ResultCardType = 'sprint' | 'task' | 'document' | 'crm' | 'integration' | 'none';
+
+export type MiloContent = 
+  | { type: 'text'; content: string }
+  | { type: 'tasks'; content: Task[] }
+  | { type: 'sprint'; content: Sprint }
+  | { type: 'documents'; content: any[] }
+  | { type: 'repository'; content: Repository }
+  | { type: 'pull_requests'; content: PullRequest[] }
+  | { type: 'crm'; content: any[] }
+  | { type: 'contracts'; content: any[] };
 
 export interface MiloMessage {
   id: string;
   role: MessageRole;
   text: string;
-  resultType?: ResultCardType;
-  resultData?: any;
+  responseContent?: MiloContent;
   timestamp: string;
 }
 
 export const miloInitialSuggestions = [
   "¿Cómo va nuestro sprint?",
   "¿Qué tareas tengo pendientes?",
-  "Busca el contrato de ACME",
-  "¿Qué pasó esta semana?"
+  "¿Qué Pull Requests están pendientes?",
+  "¿Cuál es el último commit?"
 ];
 
 export const miloChatHistory: MiloMessage[] = [
@@ -25,7 +36,6 @@ export const miloChatHistory: MiloMessage[] = [
     role: 'milo',
     text: '¡Hola Daniel! Soy Milo, el asistente de tu equipo. ¿En qué te puedo ayudar hoy?',
     timestamp: '09:00',
-    resultType: 'none'
   },
   {
     id: 'm2',
@@ -36,23 +46,21 @@ export const miloChatHistory: MiloMessage[] = [
   {
     id: 'm3',
     role: 'milo',
-    text: `El sprint "${currentSprint.name}" está al ${currentSprint.progress}% de progreso. Hemos completado ${currentSprint.completedTasks} tareas y quedan ${currentSprint.pendingTasks} pendientes.`,
+    text: `El sprint "${currentSprintDetail.name}" está al ${currentSprintDetail.progress}% de progreso. Hemos completado ${currentSprintDetail.completedTasks} tareas y quedan ${currentSprintDetail.pendingTasks} pendientes.`,
     timestamp: '09:05',
-    resultType: 'sprint',
-    resultData: currentSprint
+    responseContent: { type: 'sprint', content: currentSprintDetail }
   },
   {
     id: 'm4',
     role: 'user',
-    text: '¿Qué tareas tengo pendientes?',
+    text: '¿Qué Pull Requests están pendientes?',
     timestamp: '09:06'
   },
   {
     id: 'm5',
     role: 'milo',
-    text: 'Tienes las siguientes tareas pendientes para este sprint:',
+    text: 'Aquí tienes los Pull Requests que requieren atención:',
     timestamp: '09:06',
-    resultType: 'task',
-    resultData: recentTasks.filter(t => t.status === 'pending')
+    responseContent: { type: 'pull_requests', content: pullRequestsMock.filter(pr => pr.status !== 'merged') }
   }
 ];
