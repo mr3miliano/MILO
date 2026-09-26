@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform, Image } from 'react-native';
 import { Link, usePathname } from 'expo-router';
 import { theme } from '../../theme';
 import { 
@@ -62,7 +62,11 @@ export const Sidebar = () => {
     <View style={styles.container}>
       {/* Logo Area */}
       <View style={styles.logoContainer}>
-        <Text style={styles.logoText}>Milo GPT</Text>
+        <Image 
+          source={require('../../../assets/images/logo.png')} 
+          style={styles.logoImage} 
+          resizeMode="contain" 
+        />
       </View>
 
       {/* Main Navigation */}
@@ -99,11 +103,11 @@ const styles = StyleSheet.create({
   logoContainer: {
     paddingHorizontal: theme.spacing.xl,
     marginBottom: theme.spacing.xxl,
+    alignItems: 'flex-start',
   },
-  logoText: {
-    fontSize: theme.typography.size.xl,
-    fontWeight: theme.typography.weight.bold,
-    color: theme.colors.primary,
+  logoImage: {
+    width: 140,
+    height: 40,
   },
   navSection: {
     paddingHorizontal: theme.spacing.md,
