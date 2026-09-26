@@ -10,6 +10,8 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
+    View,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { AppShell } from "../../../../components/layout/AppShell";
@@ -38,9 +40,9 @@ export default function Home() {
 
   const handleQuickAction = (action: string) => {
     const base = `/t/${teamId || 't1'}`;
-    if (action === "Resumen del sprint") router.push(`${base}/work`);
-    if (action === "Mis tareas") router.push(`${base}/work`);
-    if (action === "Buscar documento") router.push(`${base}/work`);
+    if (action === "Resumen del sprint") router.push(`${base}/work` as any);
+    if (action === "Mis tareas") router.push(`${base}/work` as any);
+    if (action === "Buscar documento") router.push(`${base}/work` as any);
   };
 
   return (
@@ -70,7 +72,7 @@ export default function Home() {
               <Text style={[styles.telegramTitle, { color: theme.colors.warning }]}>Configuración pendiente</Text>
             </View>
             <Text style={styles.telegramDesc}>Conecta Telegram para activar el canal de comunicación de Milo con tu equipo.</Text>
-            <Pressable style={styles.telegramBtn} onPress={() => router.push(`/t/${teamId || 't1'}/integrations`)}>
+            <Pressable style={styles.telegramBtn} onPress={() => router.push(`/t/${teamId || 't1'}/integrations` as any)}>
               <Text style={styles.telegramBtnText}>Ir a Integraciones</Text>
             </Pressable>
           </View>
@@ -90,7 +92,7 @@ export default function Home() {
               placeholder="Pregúntale algo a Milo..."
               placeholderTextColor={theme.colors.text.tertiary}
             />
-            <Pressable style={styles.sendButton} onPress={() => router.push(`/t/${teamId || 't1'}/milo`)}>
+            <Pressable style={styles.sendButton} onPress={() => router.push(`/t/${teamId || 't1'}/milo` as any)}>
               <ArrowRight size={20} color={theme.colors.text.inverse} />
             </Pressable>
           </View>
@@ -113,7 +115,7 @@ export default function Home() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Resumen del Sprint</Text>
-                <Pressable onPress={() => router.push(`/t/${teamId || 't1'}/work`)}>
+                <Pressable onPress={() => router.push(`/t/${teamId || 't1'}/work` as any)}>
                   <Text style={styles.cardAction}>Ver detalles</Text>
                 </Pressable>
               </View>
@@ -154,7 +156,7 @@ export default function Home() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Mis tareas</Text>
-                <Pressable onPress={() => router.push(`/t/${teamId || 't1'}/work`)}>
+                <Pressable onPress={() => router.push(`/t/${teamId || 't1'}/work` as any)}>
                   <Text style={styles.cardAction}>Ver todas</Text>
                 </Pressable>
               </View>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
-import { AppShell } from '../components/layout/AppShell';
-import { theme } from '../theme';
-import { teamMembersMock } from '../mocks/teams';
+import { AppShell } from '../../../../components/layout/AppShell';
+import { theme } from '../../../../theme';
+import { teamMembersMock } from '../../../../mocks/teams';
 import { Mail, MoreHorizontal, UserPlus } from 'lucide-react-native';
 
 export default function TeamScreen() {

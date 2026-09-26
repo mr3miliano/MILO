@@ -56,7 +56,7 @@ export default function TeamsScreen() {
           <Pressable 
             key={team.id} 
             style={styles.teamCard}
-            onPress={() => router.push(`/t/${team.id}`)}
+            onPress={() => router.push(`/t/${team.id}` as any)}
           >
             <View style={styles.teamIcon}>
               <Text style={styles.teamIconText}>{team.name.charAt(0)}</Text>

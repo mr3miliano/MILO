@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { AppShell } from '../components/layout/AppShell';
-import { theme } from '../theme';
-import { currentSprintDetail } from '../mocks/sprints';
-import { tasksMock } from '../mocks/tasks';
-import { documentsMock } from '../mocks/documents';
-import { repositoriesMock } from '../mocks/repositories';
-import { pullRequestsMock } from '../mocks/pullRequests';
-import { SprintView } from '../components/features/work/SprintView';
-import { TasksView } from '../components/features/work/TasksView';
-import { DocumentsView } from '../components/features/work/DocumentsView';
-import { RepositoryView } from '../components/features/work/RepositoryView';
-import { PullRequestsView } from '../components/features/work/PullRequestsView';
+import { AppShell } from '../../../../components/layout/AppShell';
+import { theme } from '../../../../theme';
+import { currentSprintDetail } from '../../../../mocks/sprints';
+import { tasksMock } from '../../../../mocks/tasks';
+import { documentsMock } from '../../../../mocks/documents';
+import { repositoriesMock } from '../../../../mocks/repositories';
+import { pullRequestsMock } from '../../../../mocks/pullRequests';
+import { SprintView } from '../../../../components/features/work/SprintView';
+import { TasksView } from '../../../../components/features/work/TasksView';
+import { DocumentsView } from '../../../../components/features/work/DocumentsView';
+import { RepositoryView } from '../../../../components/features/work/RepositoryView';
+import { PullRequestsView } from '../../../../components/features/work/PullRequestsView';
 
 type TabType = 'sprint' | 'tasks' | 'documents' | 'repository' | 'pull_requests';
 

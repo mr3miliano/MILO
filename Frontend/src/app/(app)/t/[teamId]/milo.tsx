@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { AppShell } from '../components/layout/AppShell';
-import { theme } from '../theme';
-import { miloChatHistory, miloInitialSuggestions, MiloMessage as IMiloMessage } from '../mocks/milo';
-import { MiloMessage } from '../components/features/milo/MiloMessage';
-import { MiloInput } from '../components/features/milo/MiloInput';
-import { MiloSuggestion } from '../components/features/milo/MiloSuggestion';
+import { AppShell } from '../../../../components/layout/AppShell';
+import { theme } from '../../../../theme';
+import { miloChatHistory, miloInitialSuggestions, MiloMessage as IMiloMessage } from '../../../../mocks/milo';
+import { MiloMessage } from '../../../../components/features/milo/MiloMessage';
+import { MiloInput } from '../../../../components/features/milo/MiloInput';
+import { MiloSuggestion } from '../../../../components/features/milo/MiloSuggestion';
 
 export default function MiloScreen() {
   const [messages, setMessages] = useState<IMiloMessage[]>(miloChatHistory);

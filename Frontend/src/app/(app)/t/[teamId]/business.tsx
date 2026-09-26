@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { AppShell } from '../components/layout/AppShell';
-import { theme } from '../theme';
-import { crmContactsMock, crmDealsMock } from '../mocks/crm';
-import { contractsMock } from '../mocks/contracts';
+import { AppShell } from '../../../../components/layout/AppShell';
+import { theme } from '../../../../theme';
+import { crmContactsMock, crmDealsMock } from '../../../../mocks/crm';
+import { contractsMock } from '../../../../mocks/contracts';
 import { Building2, FileText, User } from 'lucide-react-native';
 
 type BusinessTab = 'crm' | 'canvas' | 'contracts';

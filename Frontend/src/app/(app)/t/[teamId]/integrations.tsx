@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import { AppShell } from '../components/layout/AppShell';
-import { theme } from '../theme';
-import { IntegrationCard } from '../components/features/integrations/IntegrationCard';
-import { TelegramTokenModal } from '../components/features/integrations/TelegramTokenModal';
-import { Connector, IntegrationProvider } from '../types';
-import { mockApi } from '../services/mockApi';
+import { AppShell } from '../../../../components/layout/AppShell';
+import { theme } from '../../../../theme';
+import { IntegrationCard } from '../../../../components/features/integrations/IntegrationCard';
+import { TelegramTokenModal } from '../../../../components/features/integrations/TelegramTokenModal';
+import { Connector, IntegrationProvider } from '../../../../types';
+import { mockApi } from '../../../../services/mockApi';
 
 const AVAILABLE_PROVIDERS: { provider: IntegrationProvider, name: string, description: string }[] = [
   { provider: 'telegram', name: 'Telegram', description: 'Bot de comunicación de Milo. Conecta el bot para que tu equipo interactúe con Milo.' },
