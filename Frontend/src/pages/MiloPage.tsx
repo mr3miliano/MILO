@@ -6,6 +6,7 @@ import { miloChatHistory, miloInitialSuggestions, MiloMessage as IMiloMessage } 
 import { MiloMessage } from '../components/features/milo/MiloMessage';
 import { MiloInput } from '../components/features/milo/MiloInput';
 import { MiloSuggestion } from '../components/features/milo/MiloSuggestion';
+import { apiClient } from '../services/apiClient';
 
 export default function MiloScreen() {
   const [messages, setMessages] = useState<IMiloMessage[]>(miloChatHistory);
@@ -21,15 +22,22 @@ export default function MiloScreen() {
     
     setMessages(prev => [...prev, newMessage]);
 
-    setTimeout(() => {
+    apiClient.sendAgentMessage(text, '00000000-0000-0000-0000-000000000001').then((response) => {
       const miloResponse: IMiloMessage = {
         id: (Date.now() + 1).toString(),
         role: 'milo',
-        text: `He recibido tu mensaje: "${text}". Aún estoy aprendiendo a responder a nuevas consultas, ¡pero pronto podré ayudarte con esto!`,
+        text: typeof response === 'string' ? response : JSON.stringify(response),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages(prev => [...prev, miloResponse]);
-    }, 1000);
+    }).catch((err) => {
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'milo',
+        text: "Hubo un error de conexión con el agente Milo.",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      }]);
+    });
   };
 
   return (

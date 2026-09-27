@@ -32,14 +32,14 @@ export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState<ConnectorStatus>('disconnected');
 
   useEffect(() => {
-    apiClient.getTeamConnectors(teamId || 't1').then(connectors => {
+    apiClient.getTeamConnectors(teamId || '00000000-0000-0000-0000-000000000001').then(connectors => {
       const tg = connectors.find(c => c.provider === 'telegram');
       if (tg) setTelegramStatus(tg.status);
     });
   }, [teamId]);
 
   const handleQuickAction = (action: string) => {
-    const base = `/t/${teamId || 't1'}`;
+    const base = `/t/${teamId || '00000000-0000-0000-0000-000000000001'}`;
     if (action === "Resumen del sprint") router.push(`${base}/work` as any);
     if (action === "Mis tareas") router.push(`${base}/work` as any);
     if (action === "Buscar documento") router.push(`${base}/work` as any);
@@ -72,7 +72,7 @@ export default function Home() {
               <Text style={[styles.telegramTitle, { color: theme.colors.warning }]}>Configuración pendiente</Text>
             </View>
             <Text style={styles.telegramDesc}>Conecta Telegram para activar el canal de comunicación de Milo con tu equipo.</Text>
-            <Pressable style={styles.telegramBtn} onPress={() => router.push(`/t/${teamId || 't1'}/integrations` as any)}>
+            <Pressable style={styles.telegramBtn} onPress={() => router.push(`/t/${teamId || '00000000-0000-0000-0000-000000000001'}/integrations` as any)}>
               <Text style={styles.telegramBtnText}>Ir a Integraciones</Text>
             </Pressable>
           </View>
@@ -92,7 +92,7 @@ export default function Home() {
               placeholder="Pregúntale algo a Milo..."
               placeholderTextColor={theme.colors.text.tertiary}
             />
-            <Pressable style={styles.sendButton} onPress={() => router.push(`/t/${teamId || 't1'}/milo` as any)}>
+            <Pressable style={styles.sendButton} onPress={() => router.push(`/t/${teamId || '00000000-0000-0000-0000-000000000001'}/milo` as any)}>
               <ArrowRight size={20} color={theme.colors.text.inverse} />
             </Pressable>
           </View>
@@ -115,7 +115,7 @@ export default function Home() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Resumen del Sprint</Text>
-                <Pressable onPress={() => router.push(`/t/${teamId || 't1'}/work` as any)}>
+                <Pressable onPress={() => router.push(`/t/${teamId || '00000000-0000-0000-0000-000000000001'}/work` as any)}>
                   <Text style={styles.cardAction}>Ver detalles</Text>
                 </Pressable>
               </View>
@@ -156,7 +156,7 @@ export default function Home() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Mis tareas</Text>
-                <Pressable onPress={() => router.push(`/t/${teamId || 't1'}/work` as any)}>
+                <Pressable onPress={() => router.push(`/t/${teamId || '00000000-0000-0000-0000-000000000001'}/work` as any)}>
                   <Text style={styles.cardAction}>Ver todas</Text>
                 </Pressable>
               </View>

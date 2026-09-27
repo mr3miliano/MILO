@@ -24,7 +24,7 @@ export default function IntegrationsScreen() {
   const [pollingConnectors, setPollingConnectors] = useState<Set<string>>(new Set());
 
   // Hardcoded for mock purposes
-  const TEAM_ID = 't1';
+  const TEAM_ID = '00000000-0000-0000-0000-000000000001';
 
   const loadConnectors = async () => {
     try {

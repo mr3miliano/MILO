@@ -22,7 +22,7 @@ export const Sidebar = () => {
   const pathname = usePathname();
   
   const pathParts = pathname.split('/');
-  const teamId = pathParts[1] === 't' ? pathParts[2] : 't1';
+  const teamId = pathParts[1] === 't' ? pathParts[2] : '00000000-0000-0000-0000-000000000001';
   const basePath = `/t/${teamId}`;
 
   const NAV_ITEMS = [
