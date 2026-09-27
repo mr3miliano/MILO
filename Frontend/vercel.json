@@ -1,0 +1,1 @@
+{`n  "framework": "create-react-app",`n  "buildCommand": "npx expo export -p web",`n  "outputDirectory": "dist"`n}
