@@ -20,11 +20,11 @@ def seed_db():
         return
 
     print("Creando equipo de prueba...")
-    team1 = Team(id=uuid.UUID("00000000-0000-0000-0000-000000000001"), name="Equipo Alpha", plan="pro")
+    team1 = Team(id=uuid.UUID("00000000-0000-0000-0000-000000000001"), name="Equipo Alpha", owner_id=uuid.UUID("00000000-0000-0000-0000-000000000002"), plan="pro")
     db.add(team1)
 
     print("Creando usuario Daniel...")
-    user1 = User(id=uuid.UUID("00000000-0000-0000-0000-000000000002"), email="daniel@example.com", full_name="Daniel Flores")
+    user1 = User(id=uuid.UUID("00000000-0000-0000-0000-000000000002"), email="daniel@example.com", name="Daniel Flores")
     db.add(user1)
     db.commit()
 
@@ -44,9 +44,9 @@ def seed_db():
     db.commit()
 
     print("Agregando tareas...")
-    task1 = Task(sprint_id=sprint.id, title="Implementar Frontend n8n", status="done", priority="high", assignee_id=user1.id)
-    task2 = Task(sprint_id=sprint.id, title="Conectar Supabase DB", status="in_progress", priority="highest", assignee_id=user1.id)
-    task3 = Task(sprint_id=sprint.id, title="Crear agentes de Milo", status="todo", priority="medium", assignee_id=user1.id)
+    task1 = Task(team_id=team1.id, sprint_id=sprint.id, title="Implementar Frontend n8n", status="done", assignee_id=user1.id)
+    task2 = Task(team_id=team1.id, sprint_id=sprint.id, title="Conectar Supabase DB", status="in_progress", priority="highest", assignee_id=user1.id)
+    task3 = Task(team_id=team1.id, sprint_id=sprint.id, title="Crear agentes de Milo", status="todo", assignee_id=user1.id)
     db.add_all([task1, task2, task3])
 
     print("Agregando integraciones...")
