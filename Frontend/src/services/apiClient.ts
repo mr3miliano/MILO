@@ -1,9 +1,24 @@
 import { ConnectorStatus, IntegrationProvider, Connector } from '../types';
 import { mockApi } from './mockApi';
 
-const BASE_URL = 'http://localhost:8000/api/v1';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 export const apiClient = {
+  async sendAgentMessage(message: string, teamId: string, userId: string = '00000000-0000-0000-0000-000000000002'): Promise<string> {
+    try {
+      const response = await fetch(\"http://localhost:8000/api/v1/agent/chat\", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, team_id: teamId, user_id: userId, channel: 'web' })
+      });
+      if (!response.ok) throw new Error('Error en Milo Agent');
+      const data = await response.json();
+      return data.output || data.response || data.message || JSON.stringify(data);
+    } catch (error) {
+      console.warn('Backend falló, usando Mocks para Milo Agent...', error);
+      return \"Milo (Mock): Recibí tu mensaje: '\'. Conecta el backend para ver la respuesta real.\";
+    }
+  },
   async getTeamConnectors(teamId: string): Promise<Connector[]> {
     try {
       const response = await fetch(`${BASE_URL}/connectors/${teamId}`);
@@ -73,3 +88,4 @@ export const apiClient = {
     }
   }
 };
+
